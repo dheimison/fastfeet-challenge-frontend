@@ -24,4 +24,5 @@ Avatar.propTypes = {
   }).isRequired,
 
   size: PropTypes.number.isRequired,
+  fontSize: PropTypes.number.isRequired,
 };
