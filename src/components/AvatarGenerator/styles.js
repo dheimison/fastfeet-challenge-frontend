@@ -7,6 +7,8 @@ export const Container = styled.div`
   background: ${(props) => props.colors.secondary};
   border-radius: 50%;
   text-transform: uppercase;
+  vertical-align: middle;
+  margin-right: 5px;
 
   span {
     display: flex;
