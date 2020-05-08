@@ -8,7 +8,7 @@ const INITIAL_STATE = {
 export default function modal(state = INITIAL_STATE, action) {
   return produce(state, (draft) => {
     switch (action.type) {
-      case '@modal/OPEN_MODAL': {
+      case '@modal/OPEN_MODAL_SUCCESS': {
         draft.open = true;
         draft.order = action.payload.order;
         break;
