@@ -1,6 +1,13 @@
-export function openModal(order) {
+export function openModalRequest(order) {
   return {
-    type: '@modal/OPEN_MODAL',
+    type: '@modal/OPEN_MODAL_REQUEST',
+    payload: { order },
+  };
+}
+
+export function openModalSuccess(order) {
+  return {
+    type: '@modal/OPEN_MODAL_SUCCESS',
     payload: { order },
   };
 }
