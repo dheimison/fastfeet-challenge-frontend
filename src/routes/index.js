@@ -3,11 +3,16 @@ import { Switch } from 'react-router-dom';
 import Route from './Route';
 
 import SignIn from '../pages/SignIn';
+import Order from '../pages/Order';
+import EditOrder from '../pages/Order/EditOrder';
 
 export default function Routes() {
   return (
     <Switch>
       <Route path="/" exact component={SignIn} />
+
+      <Route path="/orders" exact component={Order} isPrivate />
+      <Route path="/orders/edit" exact component={EditOrder} isPrivate />
     </Switch>
   );
 }
