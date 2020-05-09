@@ -11,6 +11,8 @@ import GlobalStyle from './styles/global';
 import Routes from './routes';
 import history from './services/history';
 
+import ViewModal from './components/ViewModal';
+
 import { store, persistor } from './store';
 
 function App() {
@@ -18,6 +20,7 @@ function App() {
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <Router history={history}>
+          <ViewModal />
           <Routes />
           <GlobalStyle />
           <ToastContainer autoClose={3000} />
