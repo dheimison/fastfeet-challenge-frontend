@@ -54,9 +54,10 @@ export default function Order() {
 
   function handleDropDownMenu(id) {
     if (showDropDown !== '') {
-      return setShowDropDown('');
+      setShowDropDown('');
+    } else if (id) {
+      setShowDropDown(id);
     }
-    return setShowDropDown(id);
   }
 
   function handleClickOutside(event) {
@@ -66,12 +67,17 @@ export default function Order() {
   }
 
   useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
 
     return function cleanUp() {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   });
+
+  function handleViewButton(order) {
+    setShowDropDown('');
+    dispatch(openModalRequest(order));
+  }
 
   let colorCount = 0;
 
@@ -85,11 +91,6 @@ export default function Order() {
     colorCount += 1;
 
     return color;
-  }
-
-  function handleViewButton(order) {
-    setShowDropDown('');
-    dispatch(openModalRequest(order));
   }
 
   return (
