@@ -19,25 +19,35 @@ export default function Header() {
       <img src={logo} alt="Logo fastfeet" />
 
       <nav>
-        <LinkNavigation to="/orders" selected={pathname === '/orders'}>
+        <LinkNavigation to="/orders" selected={pathname.includes('/orders')}>
           Encomendas
         </LinkNavigation>
+
         <LinkNavigation
           to="/deliverymen"
-          selected={pathname === '/deliverymen'}
+          selected={pathname.includes('/deliverymen')}
         >
           Entregadores
         </LinkNavigation>
-        <LinkNavigation to="/recipients" selected={pathname === '/recipients'}>
+
+        <LinkNavigation
+          to="/recipients"
+          selected={pathname.includes('/recipients')}
+        >
           Destinatários
         </LinkNavigation>
-        <LinkNavigation to="/problems" selected={pathname === '/problems'}>
+
+        <LinkNavigation
+          to="/problems"
+          selected={pathname.includes('/problems')}
+        >
           Problemas
         </LinkNavigation>
       </nav>
 
       <aside>
         <span>{user.name}</span>
+
         <button type="button" onClick={() => dispatch(signOut())}>
           sair do sistema
         </button>
