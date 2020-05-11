@@ -5,6 +5,7 @@ import Route from './Route';
 import SignIn from '../pages/SignIn';
 import Order from '../pages/Order';
 import EditOrder from '../pages/Order/EditOrder';
+import OrderRegistration from '../pages/Order/OrderRegistration';
 
 export default function Routes() {
   return (
@@ -13,6 +14,12 @@ export default function Routes() {
 
       <Route path="/orders" exact component={Order} isPrivate />
       <Route path="/orders/edit" exact component={EditOrder} isPrivate />
+      <Route
+        path="/orders/register"
+        exact
+        component={OrderRegistration}
+        isPrivate
+      />
     </Switch>
   );
 }
