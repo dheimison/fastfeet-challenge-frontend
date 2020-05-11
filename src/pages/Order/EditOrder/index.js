@@ -14,30 +14,16 @@ function EditOrder({ history }) {
   const [deliverymanId, setDeliverymanId] = useState(order.deliveryman.id);
   const [productName, setProductName] = useState(order.product);
 
-  async function loadRecipients() {
-    const recipientsLoaded = await api.get('/recipients');
+  async function loadOptions(pathSelected) {
+    const requestLoaded = await api.get(`/${pathSelected}`);
 
-    const formattedRecipients = recipientsLoaded.data.map((recipientObject) => {
+    const formattedRequest = requestLoaded.data.map((requestPerson) => {
       return {
-        value: recipientObject.id,
-        label: recipientObject.name,
+        value: requestPerson.id,
+        label: requestPerson.name,
       };
     });
-    return formattedRecipients;
-  }
-
-  async function loadDeliverymen() {
-    const deliverymenLoaded = await api.get('/deliverymen');
-
-    const formattedDeliverymen = deliverymenLoaded.data.map(
-      (deliverymanObject) => {
-        return {
-          value: deliverymanObject.id,
-          label: deliverymanObject.name,
-        };
-      }
-    );
-    return formattedDeliverymen;
+    return formattedRequest;
   }
 
   async function submitChanges() {
@@ -77,20 +63,38 @@ function EditOrder({ history }) {
               <span>Destinatário</span>
               <AsyncSelect
                 defaultInputValue={order.recipient.name}
-                loadOptions={loadRecipients}
+                loadOptions={() => loadOptions('recipients')}
                 defaultOptions
                 onChange={(e) => setRecipientId(e.value)}
                 filterOption={createFilter()}
+                styles={{
+                  control: (base) => ({ ...base, height: 45, color: 'red' }),
+                  menu: (base) => ({ ...base, color: '#999999', fontSize: 16 }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: '#999999',
+                    fontSize: 16,
+                  }),
+                }}
               />
             </label>
             <label>
               <span>Entregador</span>
               <AsyncSelect
                 defaultInputValue={order.deliveryman.name}
-                loadOptions={loadDeliverymen}
+                loadOptions={() => loadOptions('deliverymen')}
                 defaultOptions
                 onChange={(e) => setDeliverymanId(e.value)}
                 filterOption={createFilter()}
+                styles={{
+                  control: (base) => ({ ...base, height: 45, color: 'red' }),
+                  menu: (base) => ({ ...base, color: '#999999', fontSize: 16 }),
+                  singleValue: (base) => ({
+                    ...base,
+                    color: '#999999',
+                    fontSize: 16,
+                  }),
+                }}
               />
             </label>
           </div>

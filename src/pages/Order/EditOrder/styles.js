@@ -60,15 +60,6 @@ export const WhiteBox = styled.div`
     > label {
       width: 50%;
 
-      > div > div {
-        height: 45px;
-      }
-
-      > div > div > div > div > div > input {
-        font-size: 16px !important;
-        color: #999999 !important;
-      }
-
       & + label {
         margin-left: 30px;
       }
