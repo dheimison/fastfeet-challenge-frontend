@@ -107,7 +107,10 @@ export default function Order() {
             />
           </label>
 
-          <button type="button">
+          <button
+            type="button"
+            onClick={() => history.push('/orders/register')}
+          >
             <MdAdd size={24} color="#FFFFFF" />
             Cadastrar
           </button>
