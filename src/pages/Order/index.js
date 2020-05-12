@@ -28,28 +28,28 @@ export default function Order() {
   const [showDropDown, setShowDropDown] = useState('');
   const [orders, setOrders] = useState([]);
 
+  async function requestAPI() {
+    const response = await api.get('/orders');
+
+    const data = response.data.map((order) => {
+      if (order.canceled_at !== null) {
+        order.status = 'cancelada';
+      } else if (order.end_date !== null) {
+        order.status = 'entregue';
+      } else if (order.start_date !== null) {
+        order.status = 'retirado';
+      } else {
+        order.status = 'pendente';
+      }
+
+      return order;
+    });
+
+    setOrders(data);
+  }
+
   useEffect(() => {
-    async function request() {
-      const response = await api.get('/orders');
-
-      const data = response.data.map((order) => {
-        if (order.canceled_at !== null) {
-          order.status = 'cancelada';
-        } else if (order.end_date !== null) {
-          order.status = 'entregue';
-        } else if (order.start_date !== null) {
-          order.status = 'retirado';
-        } else {
-          order.status = 'pendente';
-        }
-
-        return order;
-      });
-
-      setOrders(data);
-    }
-
-    request();
+    requestAPI();
   }, []);
 
   function handleDropDownMenu(id) {
@@ -66,6 +66,18 @@ export default function Order() {
     }
   }
 
+  function handleViewButton(order) {
+    setShowDropDown('');
+    dispatch(openModalRequest(order));
+  }
+
+  async function handleDeleteOrder(id) {
+    if (window.confirm('Você realmente quer deletar esta encomenda?')) {
+      await api.delete(`/orders/${id}`);
+      requestAPI();
+    }
+  }
+
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
 
@@ -73,11 +85,6 @@ export default function Order() {
       document.removeEventListener('click', handleClickOutside);
     };
   });
-
-  function handleViewButton(order) {
-    setShowDropDown('');
-    dispatch(openModalRequest(order));
-  }
 
   let colorCount = 0;
 
@@ -188,7 +195,10 @@ export default function Order() {
                         </li>
 
                         <li>
-                          <button type="button">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteOrder(order.id)}
+                          >
                             <MdDeleteForever size={20} color="#de3b3b" />
                             Excluir
                           </button>
