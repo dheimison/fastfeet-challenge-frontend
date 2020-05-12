@@ -28,10 +28,13 @@ export default function Order() {
   const [showDropDown, setShowDropDown] = useState('');
   const [orders, setOrders] = useState([]);
 
-  async function requestAPI() {
-    const response = await api.get('/orders');
+  function dataTransform(oldData) {
+    if (oldData.length === 0) {
+      oldData = ['empty'];
+      return oldData;
+    }
 
-    const data = response.data.map((order) => {
+    const newData = oldData.map((order) => {
       if (order.canceled_at !== null) {
         order.status = 'cancelada';
       } else if (order.end_date !== null) {
@@ -45,11 +48,27 @@ export default function Order() {
       return order;
     });
 
-    setOrders(data);
+    return newData;
+  }
+
+  function requestAPI(query) {
+    if (query) {
+      const response = api.get(`/orders/?order=${query}`);
+      return response;
+    }
+
+    const response = api.get('/orders');
+    return response;
   }
 
   useEffect(() => {
-    requestAPI();
+    async function setInitialOrders() {
+      const response = await requestAPI();
+      const data = dataTransform(response.data);
+      setOrders(data);
+    }
+
+    setInitialOrders();
   }, []);
 
   function handleDropDownMenu(id) {
@@ -74,9 +93,28 @@ export default function Order() {
   async function handleDeleteOrder(id) {
     if (window.confirm('Você realmente quer deletar esta encomenda?')) {
       await api.delete(`/orders/${id}`);
-      requestAPI();
+      const response = await requestAPI();
+      const data = dataTransform(response.data);
+      setOrders(data);
     }
   }
+
+  function debounce() {
+    let time = null;
+
+    return function handleTimeout(event, wait = 1000) {
+      clearTimeout(time);
+
+      const { value } = event.target;
+
+      time = setTimeout(async () => {
+        const response = await requestAPI(value);
+        const data = dataTransform(response.data);
+        return setOrders(data);
+      }, wait);
+    };
+  }
+  const handleQueryInput = debounce();
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
@@ -86,19 +124,22 @@ export default function Order() {
     };
   });
 
-  let colorCount = 0;
-
   function colorIterator() {
-    if (colorCount >= defaultColors.length) {
-      colorCount = 0;
-    }
+    let colorCount = 0;
 
-    const color = defaultColors[colorCount];
+    return function defineColors() {
+      if (colorCount >= defaultColors.length) {
+        colorCount = 0;
+      }
 
-    colorCount += 1;
+      const color = defaultColors[colorCount];
+      colorCount += 1;
 
-    return color;
+      return color;
+    };
   }
+
+  const colors = colorIterator();
 
   return (
     <Container>
@@ -111,6 +152,7 @@ export default function Order() {
               type="text"
               name="search"
               placeholder="Buscar por encomendas"
+              onChange={handleQueryInput}
             />
           </label>
 
@@ -122,7 +164,6 @@ export default function Order() {
             Cadastrar
           </button>
         </div>
-
         <table>
           <thead>
             <tr>
@@ -137,78 +178,86 @@ export default function Order() {
           </thead>
 
           <tbody>
-            {orders.map((order) => (
-              <tr key={order.id}>
-                <td>#{order.id}</td>
-
-                <td>{order.recipient.name}</td>
-
-                <td style={{ textAlign: 'initial' }}>
-                  <Avatar
-                    name={order.deliveryman.name}
-                    colors={colorIterator()}
-                    size={35}
-                    fontSize={16}
-                  />
-                  <span>{order.deliveryman.name}</span>
-                </td>
-
-                <td>{order.recipient.city}</td>
-
-                <td>{order.recipient.state}</td>
-
-                <td>
-                  <Status status={order.status}>{order.status}</Status>
-                </td>
-
-                <td>
-                  <Action>
-                    <ModalButton
-                      type="button"
-                      onClick={() => handleDropDownMenu(order.id)}
-                    >
-                      <MdMoreHoriz size={24} color="#c6c6c6" />
-                    </ModalButton>
-
-                    {showDropDown === order.id && (
-                      <MiniModal ref={refDropDown}>
-                        <li>
-                          <button
-                            type="button"
-                            onClick={() => handleViewButton(order)}
-                          >
-                            <MdVisibility size={20} color="#8e5be8" />
-                            Visualizar
-                          </button>
-                        </li>
-
-                        <li>
-                          <button
-                            type="button"
-                            onClick={() =>
-                              history.push('/orders/edit', { order })
-                            }
-                          >
-                            <MdCreate size={20} color="#4d85ee" />
-                            Editar
-                          </button>
-                        </li>
-
-                        <li>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteOrder(order.id)}
-                          >
-                            <MdDeleteForever size={20} color="#de3b3b" />
-                            Excluir
-                          </button>
-                        </li>
-                      </MiniModal>
-                    )}
-                  </Action>
+            {orders[0] === 'empty' ? (
+              <tr>
+                <td style={{ width: '100%', maxWidth: 'none' }}>
+                  Nenhuma encomenda encontrada
                 </td>
               </tr>
-            ))}
+            ) : (
+              orders.map((order) => (
+                <tr key={order.id}>
+                  <td>#{order.id}</td>
+
+                  <td>{order.recipient.name}</td>
+
+                  <td style={{ textAlign: 'initial' }}>
+                    <Avatar
+                      name={order.deliveryman.name}
+                      colors={colors()}
+                      size={35}
+                      fontSize={16}
+                    />
+                    <span>{order.deliveryman.name}</span>
+                  </td>
+
+                  <td>{order.recipient.city}</td>
+
+                  <td>{order.recipient.state}</td>
+
+                  <td>
+                    <Status status={order.status}>{order.status}</Status>
+                  </td>
+
+                  <td>
+                    <Action>
+                      <ModalButton
+                        type="button"
+                        onClick={() => handleDropDownMenu(order.id)}
+                      >
+                        <MdMoreHoriz size={24} color="#c6c6c6" />
+                      </ModalButton>
+
+                      {showDropDown === order.id && (
+                        <MiniModal ref={refDropDown}>
+                          <li>
+                            <button
+                              type="button"
+                              onClick={() => handleViewButton(order)}
+                            >
+                              <MdVisibility size={20} color="#8e5be8" />
+                              Visualizar
+                            </button>
+                          </li>
+
+                          <li>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                history.push('/orders/edit', { order })
+                              }
+                            >
+                              <MdCreate size={20} color="#4d85ee" />
+                              Editar
+                            </button>
+                          </li>
+
+                          <li>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteOrder(order.id)}
+                            >
+                              <MdDeleteForever size={20} color="#de3b3b" />
+                              Excluir
+                            </button>
+                          </li>
+                        </MiniModal>
+                      )}
+                    </Action>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
