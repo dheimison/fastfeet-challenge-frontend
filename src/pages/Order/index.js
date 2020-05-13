@@ -30,8 +30,8 @@ export default function Order() {
 
   function dataTransform(oldData) {
     if (oldData.length === 0) {
-      oldData = ['empty'];
-      return oldData;
+      const newData = ['empty'];
+      return newData;
     }
 
     const newData = oldData.map((order) => {
