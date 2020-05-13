@@ -19,11 +19,13 @@ import { Container, Status, ModalButton, MiniModal, Action } from './styles';
 
 import Avatar from '../../components/AvatarGenerator';
 
-import defaultColors from '../../styles/defaultColors';
+import colorIterator from '../../utils/colorIterator';
 
 export default function Order() {
   const dispatch = useDispatch();
   const refDropDown = useRef();
+
+  const colors = colorIterator();
 
   const [showDropDown, setShowDropDown] = useState('');
   const [orders, setOrders] = useState([]);
@@ -123,23 +125,6 @@ export default function Order() {
       document.removeEventListener('click', handleClickOutside);
     };
   });
-
-  function colorIterator() {
-    let colorCount = 0;
-
-    return function defineColors() {
-      if (colorCount >= defaultColors.length) {
-        colorCount = 0;
-      }
-
-      const color = defaultColors[colorCount];
-      colorCount += 1;
-
-      return color;
-    };
-  }
-
-  const colors = colorIterator();
 
   return (
     <Container>
