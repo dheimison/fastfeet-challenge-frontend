@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 
 import { Container } from './styles';
 
-function ActionButton({ children }) {
-  return <Container>{children}</Container>;
+function ActionButton({ children, miniDropDownHeight }) {
+  return <Container height={miniDropDownHeight}>{children}</Container>;
 }
 
 ActionButton.propTypes = {
   children: PropTypes.element.isRequired,
+  miniDropDownHeight: PropTypes.number.isRequired,
 };
 
 export default ActionButton;

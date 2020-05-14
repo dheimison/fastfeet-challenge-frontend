@@ -15,7 +15,7 @@ export const Container = styled.div`
   }
 
   ul {
-    height: 120px;
+    height: ${(props) => `${props.height}px`};
     width: 150px;
     display: flex;
     flex-direction: column;
