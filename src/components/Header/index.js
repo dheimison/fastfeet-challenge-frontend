@@ -46,7 +46,7 @@ export default function Header() {
       </nav>
 
       <aside>
-        <span>{user.name}</span>
+        <span>{user && user.name}</span>
 
         <button type="button" onClick={() => dispatch(signOut())}>
           sair do sistema
